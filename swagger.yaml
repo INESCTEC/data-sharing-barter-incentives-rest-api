@@ -1,10 +1,20 @@
 swagger: '2.0'
 info:
-  title: Data Sharing / Barter Incentives Service - Restful-API
+  title: Data Sharing / Barter Incentives Service Restful-API
   description: |2
 
     ## Description:
-    Restful API for INESC TEC Data Sharing / Barter Incentives.
+    Restful API for the INESC TEC Data Sharing / Barter Incentives Service.
+    
+    This API is crafted to enable secure data exchange and incentivized collaboration among multiple agents and a central server, 
+    where the execution of Data Sharing/Barter Incentives algorithms takes place. It robustly supports internal mechanisms for 
+    Data Sharing/Barter Incentives, addressing a diverse range of use cases.
+    
+    A prominent use case, characterized by a higher Technology Readiness Level (TRL), is the collaborative forecasting scenario. 
+    In this context, various agents can trade historical (or future) time-series data—such as power generation or weather measurements 
+    data—and acquire time-series forecasts improved by the collective pool of data available on the platform. Notably, agents can 
+    access these forecasts without directly tapping into internal datasets. The economic value of data shared by one agent is 
+    inherently tied to its utility for other participants that also buy collaborative forecasts from this service.
 
     ## Main functions:
     - **User management**:
