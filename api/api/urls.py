@@ -61,7 +61,7 @@ In this context, various agents can trade historical (or future) time-series dat
 - jose.r.andrade@inesctec.pt
 - ricardo.j.bessa@inesctec.pt
 """,
-        license=openapi.License(name="MIT License"),
+        license=openapi.License(name="GNU AFFERO GENERAL PUBLIC LICENSE"),
     ),
     public=True,
     permission_classes=[permissions.AllowAny, ],
