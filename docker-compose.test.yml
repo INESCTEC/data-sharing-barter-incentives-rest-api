@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  postgresql:
+    image: postgres:12.0-alpine
+    container_name: predico_postgresql
+    restart: always
+    environment:
+      - POSTGRES_DB=valorem
+      - POSTGRES_USER=valorem
+      - POSTGRES_PASSWORD=valorem
+      - POSTGRES_PORT=5432
+    networks:
+      - test_network
+
+  app:
+    build: api
+    container_name: predico_rest_app
+    restart: unless-stopped
+    environment:
+      - DJANGO_APPLICATION_ENVIRONMENT=test
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_DB=valorem
+      - POSTGRES_USER=valorem
+      - POSTGRES_PASSWORD=valorem
+      - POSTGRES_PORT=5432
+      - WAIT_HOSTS=postgresql:5432
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - postgresql
+    networks:
+      - test_network
+
+networks:
+  test_network:
+    driver: bridge

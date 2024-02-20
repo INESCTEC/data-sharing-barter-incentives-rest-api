@@ -1,0 +1,3214 @@
+swagger: '2.0'
+info:
+  title: Predico - Restful-API
+  description: |
+
+    #### Description:
+    Restful API for the INESC TEC Data Sharing / Barter Incentives Service.
+
+    This API is crafted to enable secure data exchange and incentivized collaboration among multiple agents and a central server, where the execution of Data Sharing/Barter Incentives algorithms takes place. It robustly supports internal mechanisms for Data Sharing/Barter Incentives, addressing a diverse range of use cases.
+
+    A prominent use case, characterized by a higher Technology Readiness Level (TRL), is the collaborative forecasting scenario.
+    In this context, various agents can trade historical (or future) time-series data—such as power generation or weather measurements data—and acquire time-series forecasts improved by the collective pool of data available on the platform. Notably, agents can access these forecasts without directly tapping into internal datasets. The economic value of data shared by one agent is inherently tied to its utility for other participants that also buy collaborative forecasts from this service.
+
+    ## Main functions:
+    - **User management**:
+        * Register new user
+        * User verification / authentication
+        * User password reset
+        * Manage User Resources (i.e., bidding units in user portfolio) (create/update/delete)
+        * Manage User IOTA wallet address reference (create/update/delete)
+
+    - **Market management**:
+        * Manage Market Sessions
+        * Manage Market Balance (Session & Total Balance)
+        * Manage Market Bid Placement & Validation
+        * Manage Market IOTA wallet address reference (create/update/delete)
+
+    - **Data management**:
+        * Raw Data Ingestion (users measurements or features data)
+        * Access to forecasts (produced by the Data Sharing / Barter Incentives Service collaborative forecasting engine)
+
+    ## Developers // Contacts:
+    - andre.f.garcia@inesctec.pt
+    - carla.s.goncalves@inesctec.pt
+    - jose.r.andrade@inesctec.pt
+    - ricardo.j.bessa@inesctec.pt
+  license:
+    name: MIT License
+  version: v1
+host: predico02.inesctec.pt
+schemes:
+  - http
+basePath: /api
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+security:
+  - Bearer: []
+paths:
+  /data/market-forecasts/:
+    get:
+      operationId: get_market_forecasts
+      description: Method to get market forecasts for a specific agent resource
+      parameters:
+        - name: start_date
+          in: query
+          description: 'Request start datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T00:00:00Z'
+          required: true
+          type: string
+        - name: end_date
+          in: query
+          description: 'Request end datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T10:00:00Z'
+          required: true
+          type: string
+        - name: resource
+          in: query
+          description: Filter by agent resource identifier
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - datetime: '2022-10-01T00:34:58Z'
+                  value: 7802
+                  units: kw
+                  resource: 1
+                  resource_type: measurements
+                  time_interval: '60'
+                  aggregation_type: avg
+                  registered_at: '2022-10-20T11:34:58.131623Z'
+                - datetime: '2022-10-01T01:34:58Z'
+                  value: 7164
+                  units: kw
+                  resource: 1
+                  resource_type: measurements
+                  time_interval: '60'
+                  aggregation_type: avg
+                  registered_at: '2022-10-20T11:34:58.131623Z'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - data
+    post:
+      operationId: post_market_forecasts
+      description: '[AdminOnly] Method to register market forecasts for a specific agent resource'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketForecastsCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/MarketForecastsCreate'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - data
+    parameters: []
+  /data/raw-data/:
+    get:
+      operationId: get_raw_data
+      description: Method to get raw data for a specific agent resource
+      parameters:
+        - name: start_date
+          in: query
+          description: 'Request start datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T00:00:00Z'
+          required: true
+          type: string
+        - name: end_date
+          in: query
+          description: 'Request end datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T10:00:00Z'
+          required: true
+          type: string
+        - name: resource
+          in: query
+          description: Filter by agent resource identifier
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - datetime: '2022-10-01T00:34:58Z'
+                  value: 7802
+                  units: kw
+                  resource: 1
+                  resource_type: measurements
+                  time_interval: '60'
+                  aggregation_type: avg
+                  registered_at: '2022-10-20T11:34:58.131623Z'
+                - datetime: '2022-10-01T01:34:58Z'
+                  value: 7164
+                  units: kw
+                  resource: 1
+                  resource_type: measurements
+                  time_interval: '60'
+                  aggregation_type: avg
+                  registered_at: '2022-10-20T11:34:58.131623Z'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - data
+    post:
+      operationId: post_raw_data
+      description: Method for agents to post raw data for a specific resource
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RawDataCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/RawDataCreate'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - data
+    parameters: []
+  /market/balance/:
+    get:
+      operationId: get_market_balance
+      description: Method to get market balance for a given agent
+      parameters:
+        - name: balance__gte
+          in: query
+          description: Balance filter (greater or equal than).
+          required: false
+          type: string
+        - name: balance__lte
+          in: query
+          description: Balance filter (lower or equal than).
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - user: 1
+                  balance: 0
+                  total_deposit: 10000000
+                  total_withdraw: 6000000
+                  total_payment: 5000000
+                  total_revenue: 1000000
+                  updated_at: '2022-07-25T11:08:18.289370Z'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /market/bid/:
+    get:
+      operationId: get_market_session_bid
+      description: Method for agents to list bids for their resources in data market sessions
+      parameters:
+        - name: market_session
+          in: query
+          description: Filter by market session identifier
+          required: true
+          type: integer
+        - name: resource
+          in: query
+          description: Filter by agent resource identifier
+          required: false
+          type: integer
+        - name: confirmed
+          in: query
+          description: Return validated bids (by the marked engine) only
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - id: 1
+                  tangle_msg_id: xxxx
+                  max_payment: 3000000
+                  bid_price: 5500000
+                  gain_func: mse
+                  confirmed: true
+                  registered_at: '2022-10-20T11:37:38.442420Z'
+                  has_forecasts: false
+                  user: 1
+                  resource: 1
+                  market_session: 1
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    post:
+      operationId: post_market_session_bid
+      description: Method for agents to place a bid to purchase forecasts for a given resource in their portfolio and a specific market session
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketSessionBidCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/MarketSessionBidCreate'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /market/bid/{bid_id}:
+    patch:
+      operationId: patch_market_session_bid
+      description: Method for agents to provide the IOTA tangle message ID identifier for bids to purchase forecasts for their resources.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketSessionBidUpdate'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/MarketSessionBidUpdate'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters:
+      - name: bid_id
+        in: path
+        required: true
+        type: string
+  /market/price-weight/:
+    get:
+      operationId: market_price-weight_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - market
+    post:
+      operationId: market_price-weight_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - market
+    parameters: []
+  /market/session-balance/:
+    get:
+      operationId: get_market_session_balance
+      description: Method to get market balance of a given agent resource, in a specific market session
+      parameters:
+        - name: balance__gte
+          in: query
+          description: Balance filter (greater or equal than).
+          required: false
+          type: string
+        - name: balance__lte
+          in: query
+          description: Balance filter (lower or equal than).
+          required: false
+          type: string
+        - name: balance_by_resource
+          in: query
+          description: If true, returns balance by individual resource of each user in each session. Else, if false, returns the sum of balance per user in each session.
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - market_session: 1
+                  user: 1
+                  resource: 1
+                  session_balance: 3000000
+                  session_deposit: 3000000
+                  session_payment: 0
+                  session_revenue: 0
+                  registered_at: '2022-10-20T11:40:22.364907Z'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    post:
+      operationId: post_market_session_balance
+      description: '[AdminOnly] Method to insert balance of a given agent resource, in a specific market session'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketSessionBalanceCreate'
+      responses:
+        '201':
+          description: Updated session balance for the user ID (<user_id>).
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /market/session-fee/:
+    get:
+      operationId: market_session-fee_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - market
+    post:
+      operationId: market_session-fee_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - market
+    parameters: []
+  /market/session-transactions/:
+    get:
+      operationId: market_session-transactions_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - market
+    parameters: []
+  /market/session/:
+    get:
+      operationId: get_market_session
+      description: List market sessions
+      parameters:
+        - name: market_session
+          in: query
+          description: Filter by market session identifier
+          required: true
+          type: integer
+        - name: market_session_status
+          in: query
+          description: Filter by market session status
+          required: false
+          type: string
+        - name: latest_only
+          in: query
+          description: Return latest session only
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - id: 1
+                  session_number: 1
+                  session_date: '2022-10-20'
+                  staged_ts: '2022-10-20T11:27:06.128045Z'
+                  open_ts: '2022-10-20T11:27:10.567510Z'
+                  close_ts: '2022-10-20T11:40:07.478614Z'
+                  launch_ts: null
+                  finish_ts: null
+                  status: closed
+                  market_price: 5500000
+                  b_min: 500000
+                  b_max: 10000000
+                  n_price_steps: 20
+                  delta: 0.05
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    post:
+      operationId: post_market_session
+      description: '[AdminOnly] Method to register market session'
+      parameters: []
+      responses:
+        '201':
+          description: ''
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /market/session/{session_id}:
+    patch:
+      operationId: patch_market_session
+      description: '[AdminOnly] Method to update market session details'
+      parameters: []
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters:
+      - name: session_id
+        in: path
+        required: true
+        type: string
+  /market/transfer-out/:
+    get:
+      operationId: get_balance_transfer_out
+      description: '[AdminOnly] Method to list historical balance transfers (i.e., from market wallet to agents wallet)'
+      parameters:
+        - name: is_solid
+          in: query
+          description: Filter transactions which are solid (confirmed) in IOTA Tangle
+          required: false
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data: []
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    post:
+      operationId: post_balance_transfer_out
+      description: '[AdminOnly] Method to register new balance transfer'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BalanceTransferOut'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/BalanceTransferOut'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    put:
+      operationId: put_balance_transfer_out
+      description: '[AdminOnly] Method to update balance transfer'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BalanceTransferOut'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/BalanceTransferOut'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /market/validate/bid-payment:
+    post:
+      operationId: post_market_validate_session_bid
+      description: '[AdminOnly] Method for market engine to update bid status to valid'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketValidateSessionBid'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/MarketValidateSessionBid'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /market/wallet-address/:
+    get:
+      operationId: get_market_wallet_address
+      description: Method for agents to get current market wallet address (to use as reference for bid payments)
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                wallet_address: xxxxxxx
+                registered_at: '2022-10-20T11:26:40.731171Z'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    post:
+      operationId: post_market_wallet_address
+      description: '[AdminOnly] Method for market engine to register a new wallet address'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketWalletAddress'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/MarketWalletAddress'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    put:
+      operationId: put_market_wallet_address
+      description: '[AdminOnly] Method for market engine to edit current wallet address'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MarketWalletAddress'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/MarketWalletAddress'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - market
+    parameters: []
+  /token:
+    post:
+      operationId: token_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MyTokenObtainPair'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/MyTokenObtainPair'
+      tags:
+        - token
+    parameters: []
+  /token/refresh:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      tags:
+        - token
+    parameters: []
+  /user/list/:
+    get:
+      operationId: get_user_list
+      description: '[AdminOnly] List current agents details'
+      parameters: []
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    parameters: []
+  /user/notification/:
+    get:
+      operationId: user_notification_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserGetNotification'
+      tags:
+        - user
+    parameters: []
+  /user/notification/{id}/:
+    put:
+      operationId: user_notification_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserUpdateNotification'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserUpdateNotification'
+      tags:
+        - user
+    patch:
+      operationId: user_notification_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserUpdateNotification'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserUpdateNotification'
+      tags:
+        - user
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this user notification.
+        required: true
+        type: integer
+  /user/notification_type/:
+    get:
+      operationId: user_notification_type_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserNotificationType'
+      tags:
+        - user
+    post:
+      operationId: user_notification_type_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserNotificationType'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserNotificationType'
+      tags:
+        - user
+    parameters: []
+  /user/notification_type/{id}/:
+    put:
+      operationId: user_notification_type_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserNotificationType'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserNotificationType'
+      tags:
+        - user
+    patch:
+      operationId: user_notification_type_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserNotificationType'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserNotificationType'
+      tags:
+        - user
+    delete:
+      operationId: user_notification_type_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - user
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this user notification type.
+        required: true
+        type: integer
+  /user/password-reset-complete/:
+    patch:
+      operationId: user_password-reset-complete_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - user
+    parameters: []
+  /user/password-reset-confirm/{uidb64}/{token}/:
+    get:
+      operationId: user_password-reset-confirm_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - user
+    parameters:
+      - name: token
+        in: path
+        required: true
+        type: string
+      - name: uidb64
+        in: path
+        required: true
+        type: string
+  /user/register/:
+    post:
+      operationId: post_user_register
+      description: '[Public] Method for new agent registration. An email is issued with validation link upon registration.'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserRegistration'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserRegistration'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    parameters: []
+  /user/request-reset-email/:
+    post:
+      operationId: user_request-reset-email_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - user
+    parameters: []
+  /user/resource/:
+    get:
+      operationId: get_user_resources
+      description: Method for agents to list their registered resources
+      parameters:
+        - name: resource
+          in: query
+          description: Filter by resource identifier
+          required: false
+          type: integer
+        - name: resource_name
+          in: query
+          description: Filter by resource name
+          required: false
+          type: string
+        - name: to_forecast
+          in: query
+          description: Return resources currently registered as 'to_forecast' in the market
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - id: 1
+                  name: park-1
+                  type: measurements
+                  to_forecast: true
+                  registered_at: '2022-10-20T11:34:57.739206Z'
+                  user: 1
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    post:
+      operationId: post_user_resources
+      description: Method for agents to register a new resource
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserResources'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserResources'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    parameters: []
+  /user/resource/{resource_id}:
+    patch:
+      operationId: patch_user_resources
+      description: Method for agents to update their resource details
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserResources'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserResources'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    delete:
+      operationId: user_resource_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - user
+    parameters:
+      - name: resource_id
+        in: path
+        required: true
+        type: string
+  /user/verify/generate-link/:
+    post:
+      operationId: user_verify_generate-link_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - user
+    parameters: []
+  /user/verify/{uid}/{token}/:
+    get:
+      operationId: user_verify_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - user
+    parameters:
+      - name: token
+        in: path
+        required: true
+        type: string
+      - name: uid
+        in: path
+        required: true
+        type: string
+  /user/wallet-address/:
+    get:
+      operationId: get_user_wallet_address
+      description: Method for agents to list their IOTA wallet address
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 200
+              data:
+                description: Response data.
+                type: object
+          examples:
+            application/json:
+              code: 200
+              data:
+                - user: 1
+                  wallet_address: xxxxx
+                  registered_at: '2022-10-20T11:37:36.354205Z'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    post:
+      operationId: post_user_wallet_address
+      description: Method for agents to register their IOTA wallet address
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserWalletAddress'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserWalletAddress'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    put:
+      operationId: put_user_wallet_address
+      description: Method for agents to update their IOTA wallet address
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserWalletAddress'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserWalletAddress'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+          schema:
+            title: Not Authenticated schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 401
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - Authentication credentials were not provided.
+          examples:
+            application/json:
+              code: 401
+              data: null
+              status: error
+              message: Given token not valid for any token type
+        '403':
+          description: Forbidden
+          schema:
+            title: Forbidden access schema
+            type: object
+            properties:
+              code:
+                description: Response status code.
+                type: integer
+                enum:
+                  - 403
+              data:
+                description: Null field in case of error response.
+                type: object
+              status:
+                description: Response status info.
+                type: string
+                enum:
+                  - error
+              message:
+                description: Error message.
+                type: string
+                enum:
+                  - You do not have permission to perform this action.
+          examples:
+            application/json:
+              code: 403
+              data: null
+              status: error
+              message: You do not have permission to perform this action.
+        '500':
+          description: Internal Server Error
+      tags:
+        - user
+    parameters: []
+definitions:
+  MarketForecastsField:
+    required:
+      - datetime
+      - request
+      - value
+    type: object
+    properties:
+      datetime:
+        title: Datetime
+        type: string
+        format: date-time
+      request:
+        title: Request
+        type: string
+        format: date-time
+      value:
+        title: Value
+        type: number
+  MarketForecastsCreate:
+    required:
+      - timeseries
+      - user
+      - resource_name
+      - market_session
+      - units
+    type: object
+    properties:
+      timeseries:
+        type: array
+        items:
+          $ref: '#/definitions/MarketForecastsField'
+      user:
+        title: User
+        type: integer
+      resource_name:
+        title: Resource name
+        type: string
+        pattern: ^[a-z0-9_-]*$
+        maxLength: 64
+        minLength: 1
+      market_session:
+        title: Market session
+        type: integer
+      units:
+        title: Units
+        type: string
+        enum:
+          - w
+          - kw
+          - mw
+  RawDataField:
+    required:
+      - datetime
+      - value
+    type: object
+    properties:
+      datetime:
+        title: Datetime
+        type: string
+        format: date-time
+      value:
+        title: Value
+        type: number
+  RawDataCreate:
+    required:
+      - timeseries
+      - user
+      - resource_name
+      - time_interval
+      - aggregation_type
+      - units
+    type: object
+    properties:
+      timeseries:
+        type: array
+        items:
+          $ref: '#/definitions/RawDataField'
+      user:
+        title: User
+        type: integer
+      resource_name:
+        title: Resource name
+        type: string
+        pattern: ^[a-z0-9_-]*$
+        maxLength: 64
+        minLength: 1
+      time_interval:
+        title: Time interval
+        type: string
+        enum:
+          - '5'
+          - '15'
+          - '30'
+          - '60'
+      aggregation_type:
+        title: Aggregation type
+        type: string
+        enum:
+          - avg
+      units:
+        title: Units
+        type: string
+        enum:
+          - w
+          - kw
+          - mw
+  MarketSessionBidCreate:
+    required:
+      - market_session
+      - resource
+      - max_payment
+      - bid_price
+      - gain_func
+    type: object
+    properties:
+      market_session:
+        title: Market session
+        type: integer
+      resource:
+        title: Resource
+        type: integer
+      max_payment:
+        title: Max payment
+        type: integer
+        minimum: 1000000
+      bid_price:
+        title: Bid price
+        type: integer
+      gain_func:
+        title: Gain func
+        type: string
+        enum:
+          - mse
+          - rmse
+          - mae
+  MarketSessionBidUpdate:
+    required:
+      - tangle_msg_id
+    type: object
+    properties:
+      tangle_msg_id:
+        title: Tangle msg id
+        type: string
+        minLength: 1
+  MarketSessionBalanceCreate:
+    required:
+      - user
+      - market_session
+      - resource
+      - transaction_type
+      - amount
+    type: object
+    properties:
+      user:
+        title: User
+        type: integer
+      market_session:
+        title: Market session
+        type: integer
+      resource:
+        title: Resource
+        type: integer
+      transaction_type:
+        title: Transaction type
+        type: string
+        enum:
+          - payment
+          - revenue
+          - transfer_in
+          - transfer_out
+      amount:
+        title: Amount
+        type: number
+  BalanceTransferOut:
+    required:
+      - user_wallet_address
+      - tangle_msg_id
+      - user
+    type: object
+    properties:
+      withdraw_transfer_id:
+        title: Withdraw transfer id
+        type: integer
+        readOnly: true
+      amount:
+        title: Amount
+        type: integer
+        maximum: 2147483647
+        minimum: -2147483648
+      user_wallet_address:
+        title: User wallet address
+        type: string
+        minLength: 1
+      tangle_msg_id:
+        title: Tangle msg id
+        type: string
+        minLength: 1
+      is_solid:
+        title: Is solid
+        type: boolean
+      registered_at:
+        title: Registered at
+        type: string
+        format: date-time
+        readOnly: true
+      user:
+        title: User
+        type: integer
+  MarketValidateSessionBid:
+    required:
+      - tangle_msg_id
+    type: object
+    properties:
+      tangle_msg_id:
+        title: Tangle msg id
+        type: string
+        minLength: 1
+  MarketWalletAddress:
+    required:
+      - wallet_address
+    type: object
+    properties:
+      wallet_address:
+        title: Wallet address
+        type: string
+        minLength: 1
+      registered_at:
+        title: Registered at
+        type: string
+        format: date-time
+        readOnly: true
+  MyTokenObtainPair:
+    required:
+      - email
+      - password
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  TokenRefresh:
+    required:
+      - refresh
+    type: object
+    properties:
+      refresh:
+        title: Refresh
+        type: string
+        minLength: 1
+  UserGetNotification:
+    required:
+      - notification_title
+      - notification_description
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      user:
+        title: User
+        type: integer
+        readOnly: true
+      notification_title:
+        title: Notification title
+        type: string
+        maxLength: 255
+        minLength: 1
+      notification_description:
+        title: Notification description
+        type: string
+        maxLength: 255
+        minLength: 1
+      notification_type:
+        title: Notification type
+        type: string
+        readOnly: true
+      state:
+        title: State
+        type: boolean
+  UserUpdateNotification:
+    required:
+      - state
+    type: object
+    properties:
+      state:
+        title: State
+        type: boolean
+  UserNotificationType:
+    required:
+      - name
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+  UserRegistration:
+    required:
+      - email
+      - password
+      - first_name
+      - last_name
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        minLength: 1
+      password:
+        title: password
+        type: string
+        minLength: 1
+      first_name:
+        title: First name
+        type: string
+        maxLength: 30
+        minLength: 1
+      last_name:
+        title: Last name
+        type: string
+        maxLength: 30
+        minLength: 1
+  UserResources:
+    required:
+      - name
+      - type
+      - to_forecast
+      - user
+    type: object
+    properties:
+      id:
+        title: Id
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        pattern: ^[a-z0-9_-]*$
+        maxLength: 64
+        minLength: 1
+      type:
+        title: Type
+        type: string
+        enum:
+          - forecasts
+          - measurements
+      to_forecast:
+        title: To forecast
+        type: boolean
+      registered_at:
+        title: Registered at
+        type: string
+        format: date-time
+        readOnly: true
+      user:
+        title: User
+        type: integer
+  UserWalletAddress:
+    required:
+      - user
+      - wallet_address
+    type: object
+    properties:
+      user:
+        title: User
+        type: integer
+      wallet_address:
+        title: Wallet address
+        type: string
+        minLength: 1
+      registered_at:
+        title: Registered at
+        type: string
+        format: date-time
+        readOnly: true

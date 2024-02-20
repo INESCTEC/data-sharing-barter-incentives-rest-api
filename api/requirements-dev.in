@@ -1,0 +1,8 @@
+django-stronghold
+drf-yasg[validation]
+flake8
+pytest
+pytest-django
+pytest-cov
+coverage
+django-structlog
