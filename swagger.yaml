@@ -1,20 +1,15 @@
 swagger: '2.0'
 info:
-  title: Data Sharing / Barter Incentives Service Restful-API
-  description: |2
+  title: Data Sharing Barter Incentives Service Restful-API
+  description: |
 
-    ## Description:
+    #### Description:
     Restful API for the INESC TEC Data Sharing / Barter Incentives Service.
-    
-    This API is crafted to enable secure data exchange and incentivized collaboration among multiple agents and a central server, 
-    where the execution of Data Sharing/Barter Incentives algorithms takes place. It robustly supports internal mechanisms for 
-    Data Sharing/Barter Incentives, addressing a diverse range of use cases.
-    
-    A prominent use case, characterized by a higher Technology Readiness Level (TRL), is the collaborative forecasting scenario. 
-    In this context, various agents can trade historical (or future) time-series data—such as power generation or weather measurements 
-    data—and acquire time-series forecasts improved by the collective pool of data available on the platform. Notably, agents can 
-    access these forecasts without directly tapping into internal datasets. The economic value of data shared by one agent is 
-    inherently tied to its utility for other participants that also buy collaborative forecasts from this service.
+
+    This API is crafted to enable secure data exchange and incentivized collaboration among multiple agents and a central server, where the execution of Data Sharing/Barter Incentives algorithms takes place. It robustly supports internal mechanisms for Data Sharing/Barter Incentives, addressing a diverse range of use cases.
+
+    A prominent use case, characterized by a higher Technology Readiness Level (TRL), is the collaborative forecasting scenario.
+    In this context, various agents can trade historical (or future) time-series data—such as power generation or weather measurements data—and acquire time-series forecasts improved by the collective pool of data available on the platform. Notably, agents can access these forecasts without directly tapping into internal datasets. The economic value of data shared by one agent is inherently tied to its utility for other participants that also buy collaborative forecasts from this service.
 
     ## Main functions:
     - **User management**:
@@ -40,10 +35,10 @@ info:
     - jose.r.andrade@inesctec.pt
     - ricardo.j.bessa@inesctec.pt
     
-    
+  license:
+    name: GNU AFFERO GENERAL PUBLIC LICENSE
   version: v1
-  
-host: localhost:8080
+host: localhost:80
 schemes:
   - http
 basePath: /api
@@ -66,13 +61,12 @@ paths:
       parameters:
         - name: start_date
           in: query
-          description: "Request start datetime [`'%Y-%m-%dT%H:%M:%SZ'`]. Example:\
-            \ 2021-01-01T00:00:00Z"
+          description: 'Request start datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T00:00:00Z'
           required: true
           type: string
         - name: end_date
           in: query
-          description: "Request end datetime [`'%Y-%m-%dT%H:%M:%SZ'`]. Example: 2021-01-01T10:00:00Z"
+          description: 'Request end datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T10:00:00Z'
           required: true
           type: string
         - name: resource
@@ -182,8 +176,7 @@ paths:
         - data
     post:
       operationId: post_market_forecasts
-      description: '[AdminOnly] Method to register market forecasts for a specific
-        agent resource'
+      description: '[AdminOnly] Method to register market forecasts for a specific agent resource'
       parameters:
         - name: data
           in: body
@@ -269,13 +262,12 @@ paths:
       parameters:
         - name: start_date
           in: query
-          description: "Request start datetime [`'%Y-%m-%dT%H:%M:%SZ'`]. Example:\
-            \ 2021-01-01T00:00:00Z"
+          description: 'Request start datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T00:00:00Z'
           required: true
           type: string
         - name: end_date
           in: query
-          description: "Request end datetime [`'%Y-%m-%dT%H:%M:%SZ'`]. Example: 2021-01-01T10:00:00Z"
+          description: 'Request end datetime [`''%Y-%m-%dT%H:%M:%SZ''`]. Example: 2021-01-01T10:00:00Z'
           required: true
           type: string
         - name: resource
@@ -574,8 +566,7 @@ paths:
   /market/bid/:
     get:
       operationId: get_market_session_bid
-      description: Method for agents to list bids for their resources in data market
-        sessions
+      description: Method for agents to list bids for their resources in data market sessions
       parameters:
         - name: market_session
           in: query
@@ -689,8 +680,7 @@ paths:
         - market
     post:
       operationId: post_market_session_bid
-      description: Method for agents to place a bid to purchase forecasts for a given
-        resource in their portfolio and a specific market session
+      description: Method for agents to place a bid to purchase forecasts for a given resource in their portfolio and a specific market session
       parameters:
         - name: data
           in: body
@@ -772,8 +762,7 @@ paths:
   /market/bid/{bid_id}:
     patch:
       operationId: patch_market_session_bid
-      description: Method for agents to provide the IOTA tangle message ID identifier
-        for bids to purchase forecasts for their resources.
+      description: Method for agents to provide the IOTA tangle message ID identifier for bids to purchase forecasts for their resources.
       parameters:
         - name: data
           in: body
@@ -879,8 +868,7 @@ paths:
   /market/session-balance/:
     get:
       operationId: get_market_session_balance
-      description: Method to get market balance of a given agent resource, in a specific
-        market session
+      description: Method to get market balance of a given agent resource, in a specific market session
       parameters:
         - name: balance__gte
           in: query
@@ -894,9 +882,7 @@ paths:
           type: string
         - name: balance_by_resource
           in: query
-          description: If true, returns balance by individual resource of each user
-            in each session. Else, if false, returns the sum of balance per user in
-            each session.
+          description: If true, returns balance by individual resource of each user in each session. Else, if false, returns the sum of balance per user in each session.
           required: false
           type: boolean
       responses:
@@ -993,8 +979,7 @@ paths:
         - market
     post:
       operationId: post_market_session_balance
-      description: '[AdminOnly] Method to insert balance of a given agent resource,
-        in a specific market session'
+      description: '[AdminOnly] Method to insert balance of a given agent resource, in a specific market session'
       parameters:
         - name: data
           in: body
@@ -1376,8 +1361,7 @@ paths:
   /market/transfer-out/:
     get:
       operationId: get_balance_transfer_out
-      description: '[AdminOnly] Method to list historical balance transfers (i.e.,
-        from market wallet to agents wallet)'
+      description: '[AdminOnly] Method to list historical balance transfers (i.e., from market wallet to agents wallet)'
       parameters:
         - name: is_solid
           in: query
@@ -1715,8 +1699,7 @@ paths:
   /market/wallet-address/:
     get:
       operationId: get_market_wallet_address
-      description: Method for agents to get current market wallet address (to use
-        as reference for bid payments)
+      description: Method for agents to get current market wallet address (to use as reference for bid payments)
       parameters: []
       responses:
         '200':
@@ -1806,8 +1789,7 @@ paths:
         - market
     post:
       operationId: post_market_wallet_address
-      description: '[AdminOnly] Method for market engine to register a new wallet
-        address'
+      description: '[AdminOnly] Method for market engine to register a new wallet address'
       parameters:
         - name: data
           in: body
@@ -2245,8 +2227,7 @@ paths:
   /user/register/:
     post:
       operationId: post_user_register
-      description: '[Public] Method for new agent registration. An email is issued
-        with validation link upon registration.'
+      description: '[Public] Method for new agent registration. An email is issued with validation link upon registration.'
       parameters:
         - name: data
           in: body
@@ -2293,8 +2274,7 @@ paths:
           type: string
         - name: to_forecast
           in: query
-          description: Return resources currently registered as 'to_forecast' in the
-            market
+          description: Return resources currently registered as 'to_forecast' in the market
           required: false
           type: boolean
       responses:
