@@ -20,6 +20,7 @@ from rest_framework_simplejwt import views as jwt_views
 from rest_framework import permissions
 
 from authentication.views.login import MyTokenObtainPairView
+from users.views.user import TestEndpointView
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -80,5 +81,6 @@ urlpatterns = [
     re_path('api/token', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path('api/market/', include('market.urls'), name="market"),
     re_path('api/user/', include('users.urls'), name="users"),
-    re_path('api/data/', include('data.urls'), name="data")
+    re_path('api/data/', include('data.urls'), name="data"),
+    re_path('api/test/', TestEndpointView.as_view(), name="test-service"),
 ]

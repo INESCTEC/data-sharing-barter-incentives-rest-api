@@ -66,11 +66,12 @@ class TestMarketSessionTransactionsViewView(TransactionTestCase):
         expected_response = [
             {
                 'market_session': 1,
-                'user': user.id,
-                'resource': resource.id,
+                'user': str(user.id),
+                'resource': str(resource.id),
                 'amount': 2000000.0,
                 'transaction_type': transaction.transaction_type,
-                'registered_at': transaction.registered_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                'registered_at': transaction.registered_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "resource_name": resource.name
             }
         ]
         self.assertEqual(len(response_data), 1)
@@ -128,11 +129,12 @@ class TestMarketSessionTransactionsViewView(TransactionTestCase):
         expected_response = [
             {
                 'market_session': 1,
-                'user': user2.id,
-                'resource': resource21.id,
+                'user': str(user2.id),
+                'resource': str(resource21.id),
                 'amount': 2000000.0,
                 'transaction_type': transaction21.transaction_type,
-                'registered_at': transaction21.registered_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                'registered_at': transaction21.registered_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "resource_name": resource21.name
             }
         ]
         self.assertEqual(len(response_data), 1)

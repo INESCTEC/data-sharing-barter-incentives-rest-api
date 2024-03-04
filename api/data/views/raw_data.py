@@ -48,6 +48,9 @@ class RawDataView(APIView):
         if resource_id is not None:
             query = query.filter(resource_id=resource_id)
 
+        # Order records by datetime
+        query = query.order_by('datetime')
+
         return query
 
     @swagger_auto_schema(

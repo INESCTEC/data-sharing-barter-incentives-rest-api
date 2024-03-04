@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 
 from .market_session import MarketSession
@@ -11,9 +13,8 @@ class MarketSessionBid(models.Model):
         MAE = 'mae'
 
     # Pairs w/ 'market_bid_id' key in 'market_session_bid_payment' tbl:
-    id = models.AutoField(
-        primary_key=True
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     # User ID:
     user = models.ForeignKey(
         to="users.User",

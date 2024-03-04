@@ -52,6 +52,10 @@ class MarketForecastsView(APIView):
             query = query.filter(market_session_id=market_session_id)
         if resource_id:
             query = query.filter(resource_id=resource_id)
+
+        # Order records by datetime
+        query = query.order_by('datetime', 'request')
+
         return query
 
     @swagger_auto_schema(

@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from rest_framework import exceptions
 from django.core.validators import RegexValidator
@@ -17,10 +18,10 @@ def validate_query_params(
 ):
     if resource_id is not None:
         try:
-            int(resource_id)
+            uuid.UUID(resource_id)
         except ValueError:
             raise exceptions.ValidationError(
-                "Query param 'resource' must be an integer."
+                "Query param 'resource' must be a valid uuid."
             )
 
     if resource_name is not None:

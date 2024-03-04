@@ -42,7 +42,7 @@ class MarketForecastsCreateSerializer(serializers.Serializer):
     timeseries = MarketForecastsFieldSerializer(many=True,
                                                 required=True,
                                                 allow_null=False)
-    user = serializers.IntegerField(
+    user = serializers.UUIDField(
         required=True,
         allow_null=False,
     )

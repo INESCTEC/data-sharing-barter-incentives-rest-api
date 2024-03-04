@@ -24,7 +24,7 @@ class UserWalletAddressView(APIView):
         if user.is_superuser:
             user_id = request.query_params.get('user', None)
             if user_id:
-                query = UserWalletAddress.objects.filter(user_id=int(user_id))
+                query = UserWalletAddress.objects.filter(user_id=user_id)
             else:
                 query = UserWalletAddress.objects.all()
         else:

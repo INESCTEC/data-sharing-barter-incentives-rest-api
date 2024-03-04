@@ -1,3 +1,5 @@
+import uuid
+
 from rest_framework import exceptions
 from ..models import MarketSession
 
@@ -21,10 +23,10 @@ def validate_query_params(
             )
     if resource_id is not None:
         try:
-            int(resource_id)
+            uuid.UUID(resource_id)
         except ValueError:
             raise exceptions.ValidationError(
-                "Query param 'resource' must be an integer."
+                "Query param 'resource' must be a valid uuid."
             )
     if market_session_status is not None:
         lbl = [x.lower() for x in MarketSession.MarketStatus.labels]

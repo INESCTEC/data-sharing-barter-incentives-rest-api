@@ -84,6 +84,11 @@ class MarketSessionTransactionsSerializer(serializers.ModelSerializer):
                   'transaction_type',
                   'registered_at']
 
+    def to_representation(self, instance):
+        rep = super(MarketSessionTransactionsSerializer, self).to_representation(instance)
+        rep['resource_name'] = instance.resource.name
+        return rep
+
 
 class MarketSessionFeeSerializer(serializers.ModelSerializer):
     class Meta:

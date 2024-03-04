@@ -26,7 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(24))
 DEBUG = True
-ACCOUNT_VERIFICATION = True
+
+# Disable account verification (easier tests later)
+_acc_verify = os.environ.get('ACCOUNT_VERIFICATION', 'true')
+ACCOUNT_VERIFICATION = True if str(_acc_verify).lower() == 'true' else False
+
+if not ACCOUNT_VERIFICATION:
+    print("-" * 80)
+    print("WARNING: ACCOUNT_VERIFICATION is set to False. "
+          "This is not recommended for production environments.")
+    print("-" * 80)
 
 # HOSTS:
 # todo

@@ -1,4 +1,5 @@
 # flake8: noqa
+import uuid
 
 from django.urls import reverse
 from rest_framework import status
@@ -119,8 +120,15 @@ class TestMarketValidateSessionBidView(TransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response_data = response.json()["data"]
+
+        _bid_id = response_data["market_bid"]
+        for key in ["market_bid"]:
+            # Force UUID replacement for testing purposes:
+            assert uuid.UUID(response_data[key], version=4), f"{key} is not a valid UUID."
+            response_data[key] = "valid_uuid"
+
         expected_response = {
-            'market_bid': 1,
+            'market_bid': "valid_uuid",
             'market_session': 1,
             'tangle_msg_id': 'c3a953db074113291020b39eeb20d116833f31f590b533e967efb247100bd674',
             'user_wallet_address': 'atoi1qpx2srs3nw08yuwtyrhsksku5yfkld2fmmmj643nwq4cqyu5xtgfjhh46sp',
@@ -129,11 +137,11 @@ class TestMarketValidateSessionBidView(TransactionTestCase):
         self.assertEqual(response_data, expected_response)
 
         # Check if bid status was updated in table:
-        bid_model_data = MarketSessionBid.objects.get(id=1)
+        bid_model_data = MarketSessionBid.objects.get(id=_bid_id)
         self.assertEqual(bid_model_data.confirmed, True)
 
         # Check if is_solid flag (meaning it is solid in IOTA Tangle) is True
-        bid_payment_model_data = MarketSessionBidPayment.objects.get(market_bid_id=1)
+        bid_payment_model_data = MarketSessionBidPayment.objects.get(market_bid_id=_bid_id)
         self.assertEqual(bid_payment_model_data.is_solid, True)
 
         # Market balance should be updated (= max_payment) as bid is validated:

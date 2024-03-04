@@ -39,7 +39,7 @@ class MarketSessionBidCreateSerializer(serializers.Serializer):
         required=True,
         allow_null=False,
     )
-    resource = serializers.IntegerField(
+    resource = serializers.UUIDField(
         required=True,
         allow_null=False,
     )
@@ -227,7 +227,7 @@ class MarketSessionBidUpdateSerializer(serializers.Serializer):
         instance.save()
 
         return {
-            "bid_id": int(bid_payment.market_bid_id),
+            "bid_id": bid_payment.market_bid_id,
             "tangle_msg_id": bid_payment.tangle_msg_id,
         }
 
