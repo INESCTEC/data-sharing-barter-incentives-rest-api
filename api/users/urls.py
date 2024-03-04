@@ -1,7 +1,10 @@
 from django.urls import re_path, path
 
-from .views.user import PasswordTokenCheck, RequestPasswordResetEmail, SetNewPassword, \
-    UserGenerateVerificationLinkView, UserListView, UserRegisterView, UserVerifyEmailView
+from .views.user import (PasswordTokenCheck,
+                         RequestPasswordResetEmail,
+                         SetNewPassword, UserGenerateVerificationLinkView,
+                         UserListView, UserRegisterView, UserVerifyEmailView)
+
 from .views.user_notification import (UserNotificationListAPIView, UserNotificationTypeDeleteAndUpdateAPIView,
                                       UserNotificationTypeListAndCreateAPIView, UserNotificationUpdateStateAPIView)
 from .views.user_resources import (UserResourcesUpdateView, UserResourcesView)
@@ -46,7 +49,7 @@ urlpatterns = [
             UserResourcesView.as_view(),
             name="resource"),
 
-    re_path('resource/(?P<resource_id>[0-9]+)$',
+    re_path('resource/(?P<resource_id>[0-9a-f-]+)$',
             UserResourcesUpdateView.as_view(),
             name="resource-update"),
 

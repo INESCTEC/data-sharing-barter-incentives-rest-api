@@ -77,9 +77,9 @@ class MarketSessionBalanceRetrieveSerializer(serializers.ModelSerializer):
 
 
 class MarketSessionBalanceCreateSerializer(serializers.Serializer):
-    user = serializers.IntegerField(required=True)
+    user = serializers.UUIDField(required=True)
     market_session = serializers.IntegerField(required=True)
-    resource = serializers.IntegerField(required=True)
+    resource = serializers.UUIDField(required=True)
     transaction_type = serializers.ChoiceField(
         required=True,
         choices=MarketSessionTransactions.TransactionType

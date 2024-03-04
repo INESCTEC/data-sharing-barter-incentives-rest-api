@@ -287,3 +287,11 @@ class SetNewPassword(APIView):
         serializer.save()
 
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+
+
+class TestEndpointView(APIView):
+
+    @staticmethod
+    def get(request, format=None):
+        message = {'message': 'Welcome to Predico!'}
+        return Response(message)

@@ -41,7 +41,7 @@ class RawDataCreateSerializer(serializers.Serializer):
     timeseries = RawDataFieldSerializer(many=True,
                                         required=True,
                                         allow_null=False)
-    user = serializers.IntegerField(
+    user = serializers.UUIDField(
         required=True,
         allow_null=False
     )
@@ -71,8 +71,6 @@ class RawDataCreateSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        # todo: confirmar se queremos manter envio de dados usando como
-        #  referencia resource_id ou resource_name (por agora usa o segundo)
         user_id = attrs["user"]
         resource_name = attrs["resource_name"]
         try:

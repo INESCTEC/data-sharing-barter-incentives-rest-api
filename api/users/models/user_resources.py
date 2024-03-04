@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from .user import User
 
@@ -7,8 +9,10 @@ class UserResources(models.Model):
         FORECAST = 'forecasts'
         MEASUREMENT = 'measurements'
 
-    id = models.AutoField(
-        primary_key=True
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
     )
     user = models.ForeignKey(
         to=User,

@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  title: Predico - Restful-API
+  title: Data Sharing Barter Incentives Service Restful-API
   description: |
 
     #### Description:
@@ -35,7 +35,7 @@ info:
     - jose.r.andrade@inesctec.pt
     - ricardo.j.bessa@inesctec.pt
   license:
-    name: MIT License
+    name: GNU AFFERO GENERAL PUBLIC LICENSE
   version: v1
 host: predico02.inesctec.pt
 schemes:

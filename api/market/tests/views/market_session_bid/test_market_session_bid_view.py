@@ -1,5 +1,7 @@
 # flake8: noqa
 
+import uuid
+
 from django.urls import reverse
 from rest_framework import status
 from django.test import TransactionTestCase
@@ -67,9 +69,9 @@ class TestMarketSessionBidView(TransactionTestCase):
 
         response_data = response.json()["data"]
         self.assertEqual(response_data["market_session"], market_session.id)
-        self.assertEqual(response_data["user"], user.id)
-        self.assertEqual(response_data["resource"], resource.id)
-        self.assertEqual(response_data["id"], 1)
+        self.assertEqual(response_data["user"], str(user.id))
+        self.assertEqual(response_data["resource"], str(resource.id))
+        assert uuid.UUID(response_data["id"], version=4), "id is not a valid UUID."
         self.assertEqual(response_data["bid_price"], bid_data["bid_price"])
         self.assertEqual(response_data["gain_func"], bid_data["gain_func"])
         self.assertEqual(response_data["max_payment"], bid_data["max_payment"])
@@ -111,8 +113,8 @@ class TestMarketSessionBidView(TransactionTestCase):
         response_data = response.json()["data"]
 
         bid_payment_model_data = MarketSessionBidPayment.objects.get(market_bid_id=response_data["bid_id"])
-        self.assertEqual(bid_payment_model_data.market_bid_id, response_data["bid_id"])
-        self.assertEqual(bid_payment_model_data.tangle_msg_id, response_data["tangle_msg_id"])
+        self.assertEqual(str(bid_payment_model_data.market_bid_id), response_data["bid_id"])
+        self.assertEqual(str(bid_payment_model_data.tangle_msg_id), response_data["tangle_msg_id"])
         self.assertEqual(bid_payment_model_data.is_solid, False)
 
     def test_add_tangle_msg_id_duplicated(self):
@@ -300,8 +302,8 @@ class TestMarketSessionBidView(TransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         response_data = response.json()
         expected_response = conflict_error_response(
-            message='The user already has a placed bid '
-                    'for session ID 1 and resource ID 1.'
+            message=f'The user already has a placed bid '
+                    f'for session ID 1 and resource ID {str(resource.id)}.'
         )
         self.assertEqual(response_data, expected_response)
 
@@ -322,15 +324,21 @@ class TestMarketSessionBidView(TransactionTestCase):
         response = self.client.get(self.base_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_data = response.json()["data"]
+
+        # Force UUID replacement for unittests purposes. Confirms if
+        # valid UUID and then replaces it for final structure validation.
+        assert uuid.UUID(response_data[0]["id"], version=4), f"'id' is not a valid UUID."
+        response_data[0]["id"] = "valid_uuid"
+
         expected_response = {
-            'id': 1,
+            'id': 'valid_uuid',
             'max_payment': 1000000,
             'bid_price': 1000,
             'gain_func': 'mse',
             'confirmed': False,
             'has_forecasts': False,
-            'user': 2,
-            'resource': 1,
+            'user': str(user.id),
+            'resource': str(resource.id),
             'market_session': 1,
             'tangle_msg_id': None
         }
