@@ -9,7 +9,30 @@ env:
   POSTGRES_PASSWORD: valorem
 
 jobs:
-  build:
+  lint:
+      runs-on: ubuntu-latest
+      
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          cd api
+          pip install -r requirements.txt
+          pip install flake8
+
+      - name: Lint code
+        run: |
+          cd api
+          flake8
+
+  test:
     runs-on: ubuntu-latest
 
     services:
@@ -28,18 +51,16 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v2
-  
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python-version }}
   
       - name: Install Dependencies
         run: |
-          pwd
-          cd api
-          pwd
           python -m pip install --upgrade pip
           pip install -r requirements.txt
   
@@ -50,10 +71,6 @@ jobs:
   
       - name: Run Migrations
         run: |
-          pwd
-          cd api
-          pwd
-          sleep 10  # Wait for PostgreSQL to start
           python manage.py migrate
         env:
           POSTGRES_HOST: localhost
@@ -68,9 +85,6 @@ jobs:
           
       - name: Run Tests
         run: |
-          pwd
-          cd api
-          pwd
           pytest --cov
         env:
           POSTGRES_HOST: localhost
