@@ -11,6 +11,10 @@ env:
 jobs:
   lint:
       runs-on: ubuntu-latest
+
+      strategy:
+        matrix:
+          python-version: ["3.10", "3.11", "3.12"]
       
       steps:
       - name: Checkout code
@@ -34,6 +38,10 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
 
     services:
       postgres:
@@ -80,11 +88,7 @@ jobs:
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          
-      - name: List Tables
-        run: |
-          echo ${{ env.POSTGRES_PASSWORD }} | psql -h localhost -U ${{ env.POSTGRES_USER }} -d ${{ env.POSTGRES_DB }} -c '\dt'
-          
+              
       - name: Run Tests
         run: |
           cd api
