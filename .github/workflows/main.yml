@@ -47,6 +47,7 @@ jobs:
     - name: Run Migrations
       run: |
         cd api
+        sleep 10  # Wait for PostgreSQL to start
         python manage.py migrate
       env:
         POSTGRES_HOST: localhost
@@ -54,16 +55,14 @@ jobs:
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        WAIT_HOSTS: localhost:5432
         
     - name: Run Tests
       run: |
         cd api
-        python manage.py test
+        pytest
       env:
         POSTGRES_HOST: localhost
         POSTGRES_PORT: 5432
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        WAIT_HOSTS: localhost:5432
