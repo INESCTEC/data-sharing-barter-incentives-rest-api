@@ -59,7 +59,7 @@ jobs:
     - name: Run Tests
       run: |
         cd api
-        pytest
+        python manage.py test
       env:
         POSTGRES_HOST: localhost
         POSTGRES_PORT: 5432
