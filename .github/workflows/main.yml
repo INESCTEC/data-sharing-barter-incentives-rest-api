@@ -29,7 +29,7 @@ jobs:
         run: |
           cd api
           pip install -r requirements.txt
-          pip install flake8
+          pip install flake8 setuptools
 
       - name: Lint code
         run: |
@@ -72,6 +72,7 @@ jobs:
           cd api
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install setuptools
   
       - name: Wait for PostgreSQL to become ready
         run: |
