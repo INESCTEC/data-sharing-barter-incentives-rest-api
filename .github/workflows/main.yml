@@ -74,6 +74,7 @@ jobs:
         run: |
           cd api
           python -m pip install --upgrade pip
+          pip install --upgrade setuptools
           pip install poetry
           poetry install --with test
   
