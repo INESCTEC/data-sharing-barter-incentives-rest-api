@@ -7,6 +7,8 @@ env:
   POSTGRES_DB: valorem
   POSTGRES_USER: valorem
   POSTGRES_PASSWORD: valorem
+  POETRY_NO_INTERACTION: 1
+  POETRY_VIRTUALENVS_CREATE: 'false'
 
 jobs:
   lint:
@@ -14,7 +16,7 @@ jobs:
 
       strategy:
         matrix:
-          python-version: ["3.9", "3.10"]
+          python-version: ["3.12"]
       
       steps:
       - name: Checkout code
@@ -28,8 +30,9 @@ jobs:
       - name: Install dependencies
         run: |
           cd api
-          pip install -r requirements.txt
-          pip install flake8
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install --with test
 
       - name: Lint code
         run: |
@@ -41,7 +44,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.12"]
 
     services:
       postgres:
@@ -71,7 +74,8 @@ jobs:
         run: |
           cd api
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install poetry
+          poetry install --with test
   
       - name: Wait for PostgreSQL to become ready
         run: |
