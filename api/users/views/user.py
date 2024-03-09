@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -131,7 +131,7 @@ class UserVerifyEmailView(APIView):
             user = User.objects.get(email=payload["email"])
             # Retrieve email encoded in url (assure that user making
             # registration is the same as the one validating)
-            email = force_text(urlsafe_base64_decode(uid))
+            email = force_str(urlsafe_base64_decode(uid))
 
             # If user exists & email is correct validate:
             if (user is not None) and (email == payload['email']):
@@ -249,7 +249,7 @@ class PasswordTokenCheck(APIView):
     @staticmethod
     def get(request, uidb64, token):
         try:
-            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user_id = force_str(urlsafe_base64_decode(uidb64))
             User.objects.get(id=user_id)
 
             # This will raise a TokenError if the token is invalid

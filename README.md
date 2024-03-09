@@ -7,6 +7,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-360/)
 ![CI](https://github.com/CPES-Power-and-Energy-Systems/data-sharing-barter-incentives-rest-api/actions/workflows/main.yml/badge.svg)
 
+
 ## Requirements
 
 * [Python 3.10+](https://www.python.org/downloads/)
@@ -88,7 +89,8 @@ First, install the necessary project python dependencies:
 
 ```shell
 cd /api
-pip install -r requirements.txt
+poetry install
+poetry shell
 ```
 
 Then, create a `.dev.env` file with environment variables used to debug and update default environment variables to your specifics.

@@ -5,11 +5,11 @@ from users.models import UserResources
 class RawData(models.Model):
 
     class RawDataUnits(models.TextChoices):
-        WATT = 'w'
-        KILO_WATT = 'kw'
-        MEGA_WATT = 'mw'
+        WATT = 'w', "Watt"
+        KILO_WATT = 'kw', "Kilowatt"
+        MEGA_WATT = 'mw', "Megawatt"
 
-    class RawDataTimeInterval(models.TextChoices):
+    class RawDataTimeInterval(models.IntegerChoices):
         T5 = 5
         T15 = 15
         T30 = 30

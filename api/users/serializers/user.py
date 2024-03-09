@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import TokenError
@@ -119,7 +119,7 @@ class ResetPasswordEmailRequestSerializer(serializers.Serializer):
 
             check_one_time_token(token)
 
-            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user_id = force_str(urlsafe_base64_decode(uidb64))
             User.objects.get(id=user_id)
 
             # Check the token
@@ -135,7 +135,7 @@ class ResetPasswordEmailRequestSerializer(serializers.Serializer):
         uidb64 = self.validated_data.get('uidb64')
         token = self.validated_data.get('token')
 
-        user_id = force_text(urlsafe_base64_decode(uidb64))
+        user_id = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(id=user_id)
         one_time_token = OneTimeToken.objects.get(token=token)
         user.set_password(password)
