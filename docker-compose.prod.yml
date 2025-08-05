@@ -60,7 +60,7 @@ services:
       - letsencrypt_data:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
-      - b-nginx
+      - nginx
     networks:
       - default
 
