@@ -1,5 +1,4 @@
 import datetime as dt
-import iota_sdk
 from rest_framework import serializers
 from ..models.user_wallet import UserWalletAddress
 
@@ -17,10 +16,14 @@ class UserWalletAddressSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
+        request = self.context.get('request')
+        payment_processor = request.payment_processor
         wallet_address = attrs["wallet_address"]
-        if not iota_sdk.utils.Utils().is_address_valid(wallet_address):
+        if not payment_processor.validate_account_address(address=wallet_address):
             raise serializers.ValidationError(
-                {'wallet_address': ["Invalid wallet address."]}
+                {'wallet_address': [f'Invalid wallet address for the selected '
+                                    f'payment method: '
+                                    f'{payment_processor.PAYMENT_METHOD.name}']}
             )
         return attrs
 

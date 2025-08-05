@@ -3,12 +3,12 @@ services:
 
   postgresql:
     image: postgres:12.0-alpine
-    container_name: predico_postgresql
+    container_name: predico_enershare_postgresql
     restart: always
     env_file:
       - api/.env
     volumes:
-      - postgresql-data:/var/lib/postgresql/data
+      - postgresql-enershare-data:/var/lib/postgresql/data
     networks:
       - predico_network
     ports:
@@ -16,7 +16,7 @@ services:
 
   app: &api
     build: api
-    container_name: predico_rest_app
+    container_name: predico_enershare_rest_app
     environment:
       - WAIT_HOSTS=postgresql:5432
     restart: unless-stopped
@@ -39,6 +39,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - app
     networks:
@@ -46,11 +47,29 @@ services:
     volumes:
       - static_volume:/usr/src/api/staticfiles
       - media_volume:/usr/src/api/mediafiles
+      - letsencrypt_data:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+
+  # Service for handling SSL certificates with Certbot
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    entrypoint: /init_and_renew.sh
+    volumes:
+      - ./nginx/init_and_renew.sh:/init_and_renew.sh
+      - letsencrypt_data:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    depends_on:
+      - b-nginx
+    networks:
+      - default
 
 volumes:
-  postgresql-data:
+  postgresql-enershare-data:
   static_volume:
   media_volume:
+  letsencrypt_data:
+  certbot_www:
 
 networks:
   predico_network:

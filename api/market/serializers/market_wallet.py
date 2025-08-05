@@ -1,6 +1,4 @@
 import datetime as dt
-
-import iota_sdk
 from rest_framework import serializers
 
 from .. import exceptions
@@ -17,6 +15,7 @@ class MarketWalletAddressSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         request = self.context.get('request')
+        payment_processor = request.payment_processor
         if request.method == 'POST':
             # Check if there is any address already in DB:
             current_addresses = MarketWalletAddress.objects.all()
@@ -24,7 +23,7 @@ class MarketWalletAddressSerializer(serializers.ModelSerializer):
                 raise exceptions.MarketAddressAlreadyExists()
 
         wallet_address = attrs["wallet_address"]
-        if not iota_sdk.utils.Utils().is_address_valid(wallet_address):
+        if not payment_processor.validate_account_address(address=wallet_address):
             raise serializers.ValidationError(
                 {'wallet_address': ["Invalid wallet address."]}
             )
