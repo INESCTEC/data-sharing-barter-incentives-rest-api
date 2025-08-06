@@ -18,6 +18,7 @@ from .views.market_balance import (
     BalanceTransferOutView
 )
 from .views.market_wallet import MarketWalletAddressView
+from .views.market_payment_processor import MarketPaymentProcessorView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 app_name = "market"
@@ -35,4 +36,5 @@ urlpatterns = [
     re_path('session-fee/?$', MarketSessionFeeView.as_view(), name="market-session-fee"),
     re_path('balance/?$', MarketBalanceView.as_view(), name="market-balance"),
     re_path('transfer-out/?$', BalanceTransferOutView.as_view(), name="transfer-out-request"),
+    re_path('payment-processor/', MarketPaymentProcessorView.as_view(), name="market-payment-processor"),
 ]
