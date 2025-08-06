@@ -19,6 +19,10 @@ RUN chmod +x /wait
 RUN apt-get update && apt-get install -y build-essential
 RUN pip install --upgrade pip
 
+ARG POETRY_HTTP_BASIC_GITLAB_PAYMENT_USERNAME
+ARG POETRY_HTTP_BASIC_GITLAB_PAYMENT_PASSWORD
+
+RUN poetry config http-basic.gitlab-payment "$POETRY_HTTP_BASIC_GITLAB_PAYMENT_USERNAME" "$POETRY_HTTP_BASIC_GITLAB_PAYMENT_PASSWORD"
 # install required dependencies
 COPY poetry.lock pyproject.toml /usr/src/django/
 RUN pip install poetry && poetry install

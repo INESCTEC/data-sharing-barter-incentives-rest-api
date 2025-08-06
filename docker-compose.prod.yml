@@ -18,7 +18,8 @@ services:
     build:
       context: api
       args:
-        GITLAB_TOKEN: ${GITLAB_TOKEN}
+        POETRY_HTTP_BASIC_GITLAB_PAYMENT_USERNAME: "__token__"
+        POETRY_HTTP_BASIC_GITLAB_PAYMENT_PASSWORD: "${GITLAB_TOKEN}"
     container_name: predico_enershare_rest_app
     environment:
       - WAIT_HOSTS=postgresql:5432
