@@ -22,10 +22,11 @@ RUN pip install --upgrade pip
 ARG POETRY_HTTP_BASIC_GITLAB_PAYMENT_USERNAME
 ARG POETRY_HTTP_BASIC_GITLAB_PAYMENT_PASSWORD
 
-RUN poetry config http-basic.gitlab-payment "$POETRY_HTTP_BASIC_GITLAB_PAYMENT_USERNAME" "$POETRY_HTTP_BASIC_GITLAB_PAYMENT_PASSWORD"
 # install required dependencies
 COPY poetry.lock pyproject.toml /usr/src/django/
-RUN pip install poetry && poetry install
+RUN pip install poetry \
+RUN poetry config http-basic.gitlab-payment "$POETRY_HTTP_BASIC_GITLAB_PAYMENT_USERNAME" "$POETRY_HTTP_BASIC_GITLAB_PAYMENT_PASSWORD"
+RUN poetry install
 
 RUN mkdir /var/log/odoo \
     && touch /var/log/odoo/gunicorn-error.log \
