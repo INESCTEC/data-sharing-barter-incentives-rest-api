@@ -24,9 +24,15 @@ drf-yasg = "^1.21.7"
 django-structlog = "^7.1.0"
 django-cors-headers = "^4.3.1"
 python-dotenv = "^1.0.1"
+payment = {version = "^0.2.1", source = "gitlab-payment"}
 
 [tool.poetry.group.test]
 optional = true
+
+[[tool.poetry.source]]
+name = "gitlab-payment"
+url = "https://gitlab.inesctec.pt/api/v4/projects/5978/packages/pypi/simple"
+priority = "supplemental"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.2"
