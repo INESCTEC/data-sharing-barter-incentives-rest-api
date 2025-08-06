@@ -1,10 +1,11 @@
 # Django secret key:
 SECRET_KEY=insert_your_secret_key_here
-GITLAB_TOKEN=glpat-W8fc6JxRP2_QM21_Vv4r
+GITLAB_TOKEN=gitlab_token_here
+
 PAYMENT_METHOD_PROCESSOR=ERC20
 WEB3_PROVIDER_URL=https://sepolia.infura.io/v3/cf175d91d8c7403fa135f523098f85f5
 ERC20_CONTRACT_ADDRESS=0x3FfB7BD60Fd0eB04044BFB65DD0F3a75D0E3f022
-ETHERSCAN_API_KEY=8GYZK34PDAXGCGFFP58T6KV5FJ8N3ZYB2M
+ETHERSCAN_API_KEY=your_etherscan_api_key_here
 
 # Applications environment options: production/develop/test
 DJANGO_APPLICATION_ENVIRONMENT=develop
