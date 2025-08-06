@@ -39,20 +39,6 @@ def get_engine() -> Engine:
     return create_engine(db_url)
 
 
-def wallet_config() -> WalletConfig:
-    # Note that wallet path/file configs are not necessary
-    # as no wallet will be created here. Default values can be used.
-    return WalletConfig(
-        node_url=[settings.IOTA_NODE_URL],
-        faucet_url=settings.IOTA_FAUCET_URL,
-        wallet_db_path=os.path.join('files', 'payment.db'),
-        stronghold_snapshot_path=os.path.join('files', 'stronghold.snapshot'),
-        file_dir=os.path.join('files'),
-        wallet_backup_path=os.path.join('files', 'backup.db'),
-        wallet_password="your_wallet_password"
-    )
-
-
 def smart_contract_config() -> SmartContractConfig:
     return SmartContractConfig(
         contract_address=settings.ERC20_CONTRACT_ADDRESS,
@@ -67,13 +53,7 @@ class PaymentProcessorSingleton(metaclass=SingletonMeta):
     def initialize_payment_processor(self) -> AbstractPayment:
         payment_type = settings.PAYMENT_METHOD_PROCESSOR
         try:
-            if payment_type == "IOTA":
-                payment_controller = IOTAPaymentController(
-                    config=wallet_config(),
-                )
-                return payment_controller
-
-            elif payment_type == "ERC20":
+            if payment_type == "ERC20":
                 config = smart_contract_config()
                 provider_url = os.getenv('WEB3_PROVIDER_URL')
                 if not provider_url:

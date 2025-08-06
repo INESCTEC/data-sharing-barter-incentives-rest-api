@@ -8,7 +8,7 @@ license = "GNU Affero General Public License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-setuptools = "*"
+setuptools = "<81"
 python = "^3.12"
 Django = "^5.0.3"
 djangorestframework = "^3.14.0"

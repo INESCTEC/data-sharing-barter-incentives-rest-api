@@ -15,6 +15,7 @@ services:
       - "5432:5432"
 
   app: &api
+#    platform: linux/amd64
     build:
       context: api
       args:

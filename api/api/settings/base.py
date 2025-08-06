@@ -20,7 +20,15 @@ from pathlib import Path
 from datetime import timedelta
 
 ENVIRONMENT = os.environ['DJANGO_APPLICATION_ENVIRONMENT']
+# Extra Configs:
+# -- Payment configs:
+PAYMENT_METHOD_PROCESSOR = os.environ.get("PAYMENT_METHOD_PROCESSOR", "ERC20")
 
+# ETH Configs:
+ERC20_CONTRACT_ADDRESS = os.getenv('ERC20_CONTRACT_ADDRESS', '')
+WEB3_PROVIDER_URL = os.getenv('WEB3_PROVIDER_URL', '')
+
+MINIMUM_PAYMENT_AMOUNT = int(os.environ.get("MINIMUM_PAYMENT_AMOUNT", 1000000))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
