@@ -72,6 +72,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'django_structlog.middlewares.RequestMiddleware',
+    'api.middleware.PaymentProcessorMiddleware'
 ]
 
 ROOT_URLCONF = 'api.urls'
