@@ -15,7 +15,10 @@ services:
       - "5432:5432"
 
   app: &api
-    build: api
+    build:
+      context: api
+      args:
+        GITLAB_TOKEN: ${GITLAB_TOKEN}
     container_name: predico_enershare_rest_app
     environment:
       - WAIT_HOSTS=postgresql:5432
