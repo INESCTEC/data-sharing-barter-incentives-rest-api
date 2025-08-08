@@ -12,7 +12,7 @@ services:
     networks:
       - predico_network
     ports:
-      - "5432:5432"
+      - "5432"
 
   app: &api
 #    platform: linux/amd64
@@ -43,8 +43,7 @@ services:
       context: nginx
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "8443:443"
     depends_on:
       - app
     networks:
@@ -56,25 +55,27 @@ services:
       - certbot_www:/var/www/certbot
 
   # Service for handling SSL certificates with Certbot
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    entrypoint: /init_and_renew.sh
-    volumes:
-      - ./nginx/init_and_renew.sh:/init_and_renew.sh
-      - letsencrypt_data:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    depends_on:
-      - nginx
-    networks:
-      - default
+#  certbot:
+#    image: certbot/certbot
+#    container_name: certbot
+#    entrypoint: /init_and_renew.sh
+#    volumes:
+#      - ./nginx/init_and_renew.sh:/init_and_renew.sh
+#      - letsencrypt_data:/etc/letsencrypt
+#      - certbot_www:/var/www/certbot
+#    depends_on:
+#      - nginx
+#    networks:
+#      - default
 
 volumes:
   postgresql-enershare-data:
   static_volume:
   media_volume:
   letsencrypt_data:
+    external: true
   certbot_www:
+    external: true
 
 networks:
   predico_network:
