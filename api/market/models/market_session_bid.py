@@ -74,8 +74,8 @@ class MarketSessionBidPayment(models.Model):
                                       on_delete=models.CASCADE,
                                       primary_key=True,
                                       related_name='payment')
-    # IOTA tangle message ID (searchable in IOTA explorer):
-    tangle_msg_id = models.TextField(unique=True, null=False)
+    # Blockchain transaction ID (searchable in explorer):
+    transaction_id = models.TextField(unique=True, null=False)
     # If transfer is solid in Tangle:
     is_solid = models.BooleanField(null=False, default=False)
     # Register date:

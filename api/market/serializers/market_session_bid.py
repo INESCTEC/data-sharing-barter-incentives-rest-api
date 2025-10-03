@@ -21,17 +21,17 @@ from ..models.market_wallet import MarketWalletAddress
 
 
 class MarketSessionBidRetrieveSerializer(serializers.ModelSerializer):
-    tangle_msg_id = serializers.SerializerMethodField()
+    transaction_id = serializers.SerializerMethodField()
 
     class Meta:
         model = MarketSessionBid
         fields = '__all__'
 
     @staticmethod
-    def get_tangle_msg_id(obj):
-        # Attempt to access the related payment object and its tangle_msg_id attribute
+    def get_transaction_id(obj):
+        # Attempt to access the related payment object and its transaction_id attribute
         # If the related payment does not exist, return None or a default value
-        return obj.payment.tangle_msg_id if hasattr(obj, 'payment') and obj.payment else None
+        return obj.payment.transaction_id if hasattr(obj, 'payment') and obj.payment else None
 
 
 class MarketSessionBidCreateSerializer(serializers.Serializer):
@@ -167,7 +167,7 @@ class MarketSessionBidCreateSerializer(serializers.Serializer):
 
 
 class MarketSessionBidUpdateSerializer(serializers.Serializer):
-    tangle_msg_id = serializers.CharField(
+    transaction_id = serializers.CharField(
         required=True,
         allow_blank=False,
         allow_null=False
@@ -181,7 +181,7 @@ class MarketSessionBidUpdateSerializer(serializers.Serializer):
         """
         request = self.context.get('request')
         bid_id = self.context.get('bid_id')
-        tangle_msg_id = attrs.get('tangle_msg_id')
+        transaction_id = attrs.get('transaction_id')
         user = request.user
 
         # Check if user has a registered wallet address with a single query
@@ -199,28 +199,28 @@ class MarketSessionBidUpdateSerializer(serializers.Serializer):
         except MarketSessionBid.DoesNotExist:
             raise market_exceptions.UserBidNotRegistered(user=user, bid_id=bid_id)
 
-        # Check for existing tangle_msg_id or bid update in a single query
+        # Check for existing transaction_id or bid update in a single query
         if MarketSessionBidPayment.objects.filter(Q(market_bid_id=bid_id) |
-                                                  Q(tangle_msg_id=tangle_msg_id)).exists():
+                                                  Q(transaction_id=transaction_id)).exists():
             raise market_exceptions.BidAlreadyWithTangleIdException(bid_id=bid_id)
 
         attrs["bid_id"] = bid_id
         return attrs
 
     def update(self, instance, validated_data):
-        tangle_msg_id = validated_data["tangle_msg_id"]
+        transaction_id = validated_data["transaction_id"]
         bid_id = validated_data["bid_id"]
         try:
             # Register bid payment:
             bid_payment = MarketSessionBidPayment.objects.create(
-                tangle_msg_id=tangle_msg_id,
+                transaction_id=transaction_id,
                 market_bid_id=bid_id,
                 is_solid=False,
             )
         except IntegrityError:
-            # each tangle msg id can only be associated with 1 bid:
+            # each transaction id can only be associated with 1 bid:
             raise market_exceptions.DuplicatedTangleMessageId(
-                tangle_msg_id=tangle_msg_id
+                transaction_id
             )
 
         instance.has_tangle_msg_id = True
@@ -228,40 +228,41 @@ class MarketSessionBidUpdateSerializer(serializers.Serializer):
 
         return {
             "bid_id": bid_payment.market_bid_id,
-            "tangle_msg_id": bid_payment.tangle_msg_id,
+            "transaction_id": bid_payment.transaction_id,
         }
 
 
 class MarketValidateSessionBidSerializer(serializers.Serializer):
-    tangle_msg_id = serializers.CharField()
+    transaction_id = serializers.CharField()
 
     def update(self, instance, validated_data):
         pass
 
     def validate(self, attrs):
         try:
-            # Check if tangle message id is already assigned to a bid:
+            # Check if transaction id is already assigned to a bid:
             transaction_data = MarketSessionBidPayment.objects.get(
-                tangle_msg_id=attrs['tangle_msg_id']
+                transaction_id=attrs['transaction_id']
             )
         except MarketSessionBidPayment.DoesNotExist:
+            # pass positional to be compatible with existing exception signature
             raise market_exceptions.BidPaymentNotFound(
-                tangle_msg_id=attrs['tangle_msg_id']
+                attrs['transaction_id']
             )
 
         try:
-            # -- Query bid info associated with request tangle message id:
+            # -- Query bid info associated with request transaction id:
             bid_data = MarketSessionBid.objects.get(
                 id=transaction_data.market_bid_id
             )
             # -- Check if bid was already confirmed (in IOTA Tangle):
             if bid_data.confirmed:
                 raise market_exceptions.TransactionAlreadyValid(
-                    tangle_msg_id=attrs['tangle_msg_id']
+                    attrs['transaction_id']
                 )
         except MarketSessionBid.DoesNotExist:
             raise market_exceptions.NoBidsDataFound(
-                tangle_msg_id=attrs['tangle_msg_id']
+                attrs['transaction_id']
             )
 
         # Save objects to later update:
@@ -272,7 +273,7 @@ class MarketValidateSessionBidSerializer(serializers.Serializer):
     def create(self, validated_data):
         # -- Get params:
         wallet_address = MarketWalletAddress.objects.first().wallet_address
-        tangle_msg_id = validated_data['tangle_msg_id']
+        transaction_id = validated_data['transaction_id']
         transaction_data = validated_data['transaction_data']
         bid_data = validated_data['bid_data']
         transaction_type = MarketSessionTransactions.TransactionType.TRANSFER_IN
@@ -299,7 +300,7 @@ class MarketValidateSessionBidSerializer(serializers.Serializer):
         return {
             "market_bid": bid_data.id,
             "market_session": bid_data.market_session_id,
-            "tangle_msg_id": tangle_msg_id,
+            "transaction_id": transaction_id,
             "user_wallet_address": wallet_address,
             "confirmed": bid_data.confirmed,
         }

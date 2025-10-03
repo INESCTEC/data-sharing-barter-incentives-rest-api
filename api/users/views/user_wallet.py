@@ -81,7 +81,7 @@ class UserWalletAddressView(APIView):
         })
     def put(self, request):
         request.data["user"] = request.user.id
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         query = self.queryset(request)
         if query.exists():

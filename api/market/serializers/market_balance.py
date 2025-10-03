@@ -28,7 +28,7 @@ class BalanceTransferOutSerializer(serializers.ModelSerializer):
             "user_id": session.user_id,
             "amount": session.amount,
             "user_wallet_address": session.user_wallet_address,
-            "tangle_msg_id": session.tangle_msg_id,
+            "transaction_id": session.transaction_id,
             "withdraw_transfer_id": session.withdraw_transfer_id
         }
 

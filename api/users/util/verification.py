@@ -86,7 +86,7 @@ def account_url_metadata(request):
         # When behind NGINX - port is not included in .get_host()
         port = request.get_port()
 
-    port = 80
+    port = 8443
 
     return token, host, port, protocol, uid
 

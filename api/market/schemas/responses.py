@@ -323,7 +323,7 @@ GetMarketSessionBidResponse = \
                 "data": [
                     {
                         "id": 1,
-                        "tangle_msg_id": "xxxx",
+                        "transaction_id": "xxxx",
                         "max_payment": 3000000,
                         "bid_price": 5500000,
                         "gain_func": "mse",

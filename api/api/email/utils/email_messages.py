@@ -32,7 +32,7 @@ EMAIL_OPTS = {
                    "<strong>Session Number:</strong> {session_number}<br>"
                    "<strong>Gain function:</strong> {gain_func}<br>"
                    "<strong>Max Payment:</strong> {max_payment}i<br>"
-                   "<strong>Tangle Message ID:</strong> {tangle_msg_id}<br>"
+                   "<strong>Transaction ID:</strong> {transaction_id}<br>"
     },
 
     'email-verification': {

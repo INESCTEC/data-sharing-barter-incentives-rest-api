@@ -106,8 +106,8 @@ class BalanceTransferOut(models.Model):
         unique=False,
         null=False
     )
-    # IOTA tangle message ID (searchable in IOTA explorer):
-    tangle_msg_id = models.TextField(
+    # Blockchain message ID (searchable in blockchain explorer):
+    transaction_id = models.TextField(
         unique=False,
         null=False
     )
