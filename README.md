@@ -3,7 +3,6 @@
 -----------------------------------------------------
 
 [![version](https://img.shields.io/badge/version-0.0.1-blue.svg)]()
-[![status](https://img.shields.io/badge/status-development-yellow.svg)]()
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![status: archived](https://img.shields.io/badge/status-archived-grey)](https://github.com/INESCTEC/predico-collabforecast)
 
